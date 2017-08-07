@@ -43,70 +43,8 @@ type Volume struct {
 	Status									string `json: status`
 }
 
-/* type Volume struct {
-	NextStop								string `json: nextStop`
-	Origin									Origin
-	Destination								Destination
-	LogisticProvider						LogisticProvider
-	Volume									VolumeD
-	Event									Event
-} */
-
-type Origin struct {
-	Name 									string `json: "name"`
-	/* Address 								string `json: "address"`
-	FederalTaxPayerId						string `json: "federalTaxPayerId"`
-	AddressNumber							int	   `json: "addressNumber"` */
-	ZipCode									string `json: "zipCode"`
-}
-
-type EndCustomerFinal struct {
-	Name 									string `json: "name"`
-	FederalTaxPayerId						string `json: "federalTaxPayerId"`
-	/* Address 								string `json: "address"`
-	AddressNumber							int	   `json: "addressNumber"`
-	ZipCode									string `json: "zipCode"`
-	City									string `json: "city"`
-	Quarter									string `json: "quarter"`
-	Email									string `json: "email"`
-	Phone									string `json: "phone"`
-	Cellphone								string `json: "cellphone"` */
-}
-
-type Destination struct {
-	EndCustomer 							EndCustomerFinal
-	/* ShipperEstimatedDeliveryDate 			string `json: "shipperEstimatedDeliveryDate"`
-	LogisticProviderEstimatedDeliveryDate	string `json: "logisticProviderEstimatedDeliveryDate"` */
-}
-
-type LogisticProvider struct {
-	Id										string `json: "id"`
-	/* Name 									string `json: "name"`
-	Address 								string `json: "address"`
-	AddressNumber							int	   `json: "addressNumber"`
-	ZipCode									string `json: "zipCode"`
-	City									string `json: "city"`
-	Quarter									string `json: "quarter"` */
-}
-
-type VolumeD struct {
-	TrackId									string `json: "trackId"` 
-	//VolumeData								VolumeData														
-}
-
-/* type VolumeData struct {
-	Key										string `json: key`
-} */
-
-type Event struct {
-	Date 									string `json: date`
-	StatusCode								string `json: statusCode`
-//Description								string `json: description`
-	LogisticProviderProperties				string `json: logisticProviderPropertis`
-}
-
 func main() {
-	fmt.Println("[IP] Start Contract")
+	fmt.Println("Start Contract")
 
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
@@ -123,7 +61,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 }
 
 // Invoke is our entry point to invoke a chaincode function
-func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args [] string) ([]byte, error) {
     fmt.Println("invoke is running " + function)
 
     // Handle different functions
@@ -147,17 +85,12 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
     return nil, errors.New("Received unknown function invocation")
 }
 
-// Query is our entry point for queries
-// func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-//     fmt.Println("query is running " + function)
+func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+	logger.Debug("query function: ", function)
+	fmt.Println(args)
 
-//     /* if function == "read" {                            //read a variable
-//         return t.read(stub, args)
-//     }
-//     fmt.Println("query did not find func: " + function)
-//  */
-//     return nil, errors.New("Received unknown function query")
-// }
+	return nil, errors.New("Received unknown function invocation " + function)
+}
 
 // Functions to Write
 func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper string) ([]byte, error) {
@@ -166,7 +99,7 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper
 	var err error
 	var bytes []byte
 
-	v.TrackId = GenerateRandomString(100)
+	v.TrackId = GenerateRandomString(10)
 	v.Owner = "SHIPPER"
 	v.Shipper = shipper
 	
@@ -179,33 +112,7 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper
 	if err != nil { return nil, errors.New("Unable to put the state") }
 
 	return nil, nil
-
-	//err = json.Unmarshal([]byte(volume_json), &v)
-
-	/* record, err := stub.GetState(v.id)
-	if record != nil { return nil, errors.New("Volume already exists") } */
-
-	//_, err  = t.save_changes(stub, v)
-
-	//if err != nil { fmt.Printf("Create_Volume: Error saving changes: %s", err); return nil, errors.New("Error saving changes") }
 }
-
-/* func (t *SimpleChaincode) save_changes(stub shim.ChaincodeStubInterface, v Volume) (bool, error) {
-
-	bytes, err := json.Marshal(v)
-
-	if err != nil { fmt.Printf("SAVE_CHANGES: Error converting vehicle record: %s", err); return false, errors.New("Error converting volume record") }
-
-	err = stub.PutState(v.id, bytes)
-
-	if err != nil { fmt.Printf("SAVE_CHANGES: Error storing volume record: %s", err); return false, errors.New("Error storing volume record") }
-
-	return true, nil
-} */
-
-/* func (t *SimpleChaincode) shipperToLogisticProvider(stub shim.ChaincodeStubInterface, v Volume) ([]byte, error) {
-
-} */
 
 func GenerateRandomString(n int) (string) {
     const letters = "0123456789"
@@ -228,5 +135,3 @@ func GenerateRandomBytes(n int) ([]byte) {
 
     return b
 }
-
-// Functions to Read
