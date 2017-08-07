@@ -142,7 +142,7 @@ func GenerateRandomBytes(n int) ([]byte) {
 
 func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface) ([]byte, error) {
 	//select range
-	resultsIterator, err := stub.RangeQueryState("volume-0", "volume-9999999999")
+	resultsIterator, err := stub.RangeQueryState("0", "9999999999")
 
 	if err != nil {
 		return nil, errors.New("[IP][Query] Unknown error")
@@ -170,6 +170,8 @@ func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface) ([]byte,
 
 		var volume Volume
 		json.Unmarshal(queryValAsBytes, &volume)
+
+		fmt.Println(string(queryValAsBytes));
 
 		// clientIdOk := clientId == "-1" || volume.ClientId == clientId			 				
 		// logisticProviderIdOk := logisticProviderId == "-1" || volume.LogisticProviderId == logisticProviderId
