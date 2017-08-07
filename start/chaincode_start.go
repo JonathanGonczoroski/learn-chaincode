@@ -166,7 +166,7 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper
 	var err error
 	var bytes []byte
 
-	v.TrackId = GenerateRandomString(100)
+	v.TrackId = GenerateRandomString(10)
 	v.Owner = "SHIPPER"
 	v.Shipper = shipper
 	
