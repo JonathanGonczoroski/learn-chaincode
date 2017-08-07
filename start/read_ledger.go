@@ -18,7 +18,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 }
 
 func (t *SimpleChaincode) get_volume(stub shim.ChaincodeStubInterface) ([]byte, error) {
-	bytes, err := stub.GetState()
+	bytes, err := stub.GetState("TrackId")
 
 	return bytes, err
 }
