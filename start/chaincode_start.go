@@ -150,6 +150,8 @@ func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface, args []s
 
 	field := args[0]
 	value := args[1]
+	fmt.Println(field)
+	fmt.Println(value)
 	// logisticProviderId := args[1]
 	// pendingOrder, err := strconv.ParseBool(args[2])
 	// findAll, err := strconv.ParseBool(args[3])
@@ -204,4 +206,33 @@ func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	return []byte(result), nil
+}
+
+func (t *SimpleChaincode) get_volume(stub shim.ChaincodeStubInterface, trackerId string) (Volume, error) {
+	//select range
+	resultsIterator, err := stub.RangeQueryState("0", "9999999999")
+    var volume Volume
+	if err != nil {
+		return volume, errors.New("[IP][Query] Unknown error")
+	}		
+
+	defer resultsIterator.Close()
+	
+	for resultsIterator.HasNext() {
+		queryKeyAsStr, queryValAsBytes, err := resultsIterator.Next()
+
+		fmt.Println("[IP][Query] hack: " + queryKeyAsStr)
+
+		if err != nil {
+			return volume, errors.New("[IP][Query] Unknown error")
+		}
+
+
+		json.Unmarshal(queryValAsBytes, &volume)
+		fmt.Println(string(queryValAsBytes));
+
+		return volume, nil
+	}
+
+	return volume, nil
 }
