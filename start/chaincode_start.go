@@ -72,7 +72,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
         return t.Init(stub, "init", args)
 	} else if function == "CreateVolume" {
 		return t.CreateVolume(stub, args[0])
-	} else if function == "shipperToLogisticProvider" {
+	} else if function == "ShipperToLogisticProvider" {
         return t.ShipperToLogisticProvider(stub, args)
     } else if function == "LogisticProviderToLogisticProvider" {
 		return t.LogisticProviderToLogisticProvider(stub, args)
@@ -120,6 +120,7 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper
 
 func (t *SimpleChaincode) ShipperToLogisticProvider(stub shim.ChaincodeStubInterface, args [] string) ([]byte, error) {
 	fmt.Println("shipper to logistic provider running");
+	errors.New("Teste Message Error")
 
 	var trackId = args[0];
 
