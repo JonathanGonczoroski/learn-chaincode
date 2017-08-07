@@ -142,7 +142,7 @@ func GenerateRandomBytes(n int) ([]byte) {
 
 func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface) ([]byte, error) {
 	//select range
-	resultsIterator, err := stub.RangeQueryState("order-0", "order-9999999999")
+	resultsIterator, err := stub.RangeQueryState("volume-0", "volume-9999999999")
 
 	if err != nil {
 		return nil, errors.New("[IP][Query] Unknown error")
