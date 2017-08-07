@@ -90,7 +90,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	fmt.Println(args)
 
 	if function == "get_volumes" {
-		return t.get_volumes(stub)
+		return t.get_volumes(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation " + function)
@@ -140,15 +140,16 @@ func GenerateRandomBytes(n int) ([]byte) {
     return b
 }
 
-func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface) ([]byte, error) {
+func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	//select range
 	resultsIterator, err := stub.RangeQueryState("0", "9999999999")
 
 	if err != nil {
 		return nil, errors.New("[IP][Query] Unknown error")
-	}
+	}	
 
-	// clientId := args[0]
+	field := args[0]
+	value := args[1]
 	// logisticProviderId := args[1]
 	// pendingOrder, err := strconv.ParseBool(args[2])
 	// findAll, err := strconv.ParseBool(args[3])
@@ -170,8 +171,17 @@ func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface) ([]byte,
 
 		var volume Volume
 		json.Unmarshal(queryValAsBytes, &volume)
-
 		fmt.Println(string(queryValAsBytes));
+
+		if field == "trackerId" {
+			if volume.TrackId == value {
+				result += string(queryValAsBytes) + ","
+				hasResult = true
+			}
+		} else {
+			result += string(queryValAsBytes) + ","
+			hasResult = true
+		}
 
 		// clientIdOk := clientId == "-1" || volume.ClientId == clientId			 				
 		// logisticProviderIdOk := logisticProviderId == "-1" || volume.LogisticProviderId == logisticProviderId
@@ -185,9 +195,6 @@ func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface) ([]byte,
 		// }
 
 		// fmt.Println("[IP][Query] ClientId: " + clientId + " | LogisticProviderId: " + logisticProviderId + " | PendingOrder: " + strconv.FormatBool(pendingOrder) + " | ClientIdOk: " + strconv.FormatBool(clientIdOk) + " | LogisticProviderIdOk: " + strconv.FormatBool(logisticProviderIdOk) + " | FindPendingOk: " + strconv.FormatBool(findPendingOk) + " | FindAll: " + strconv.FormatBool(findAll))
-
-		result += string(queryValAsBytes) + ","
-		hasResult = true
 	}
 
 	if hasResult {
