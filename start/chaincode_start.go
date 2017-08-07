@@ -16,7 +16,7 @@ import (
 	//"encoding/json"
 	//"regexp"
 	//"time"
-	//"crypto/md5"
+	"crypto/rand"
 	//"io"
 )
 
@@ -42,54 +42,54 @@ type Volume struct {
 
 type Origin struct {
 	Name 									string `json: "name"`
-	Address 								string `json: "address"`
+	/* Address 								string `json: "address"`
 	FederalTaxPayerId						string `json: "federalTaxPayerId"`
-	AddressNumber							int	   `json: "addressNumber"`
+	AddressNumber							int	   `json: "addressNumber"` */
 	ZipCode									string `json: "zipCode"`
 }
 
 type EndCustomerFinal struct {
 	Name 									string `json: "name"`
 	FederalTaxPayerId						string `json: "federalTaxPayerId"`
-	Address 								string `json: "address"`
+	/* Address 								string `json: "address"`
 	AddressNumber							int	   `json: "addressNumber"`
 	ZipCode									string `json: "zipCode"`
 	City									string `json: "city"`
 	Quarter									string `json: "quarter"`
 	Email									string `json: "email"`
 	Phone									string `json: "phone"`
-	Cellphone								string `json: "cellphone"`
+	Cellphone								string `json: "cellphone"` */
 }
 
 type Destination struct {
 	EndCustomer 							EndCustomerFinal
-	ShipperEstimatedDeliveryDate 			string `json: "shipperEstimatedDeliveryDate"`
-	LogisticProviderEstimatedDeliveryDate	string `json: "logisticProviderEstimatedDeliveryDate"`
+	/* ShipperEstimatedDeliveryDate 			string `json: "shipperEstimatedDeliveryDate"`
+	LogisticProviderEstimatedDeliveryDate	string `json: "logisticProviderEstimatedDeliveryDate"` */
 }
 
 type LogisticProvider struct {
 	Id										string `json: "id"`
-	Name 									string `json: "name"`
+	/* Name 									string `json: "name"`
 	Address 								string `json: "address"`
 	AddressNumber							int	   `json: "addressNumber"`
 	ZipCode									string `json: "zipCode"`
 	City									string `json: "city"`
-	Quarter									string `json: "quarter"`
+	Quarter									string `json: "quarter"` */
 }
 
 type VolumeD struct {
 	TrackId									string `json: "trackId"` 
-	VolumeData								VolumeData														
+	//VolumeData								VolumeData														
 }
 
-type VolumeData struct {
+/* type VolumeData struct {
 	Key										string `json: key`
-}
+} */
 
 type Event struct {
 	Date 									string `json: date`
 	StatusCode								string `json: statusCode`
-	Description								string `json: description`
+//Description								string `json: description`
 	LogisticProviderProperties				string `json: logisticProviderPropertis`
 }
 
@@ -118,9 +118,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
     if function == "init" {
         return t.Init(stub, "init", args)
 	} else if function == "CreateVolume" {
-		fmt.Println("invoke is here!!!!" + function)
 		return t.CreateVolume(stub)
-	} /* else if function == "shipperToLogisticProvider" {
+	} /*else if function == "shipperToLogisticProvider" {
         return t.shipperToLogisticProvider(stub, args)
     } else if function == "LogisticProviderToCustomer" {
 		return t.LogisticProviderToCustomer(stub, args)
@@ -157,10 +156,9 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface) ([]byte
 	//v.Destination    	= nil
 	//v.LogisticProvifer	= nil
 	//v.Event         	= nil
-	v.Volume.TrackId	= "chave";
+	v.Volume.TrackId	= GenerateRandomString(32);
 
- 	fmt.Println("[IP][Volume]: fmt" + v.Volume.TrackId)
-	logger.Debug("[IP][Volume]: logger", v)
+ 	fmt.Println("[Volume]: " + v.Volume.TrackId)
 
 	return nil, nil
 	//err = json.Unmarshal([]byte(volume_json), &v)
@@ -187,5 +185,31 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface) ([]byte
 
 	return true, nil
 } */
+
+/* func (t *SimpleChaincode) shipperToLogisticProvider(stub shim.ChaincodeStubInterface, v Volume) ([]byte, error) {
+
+} */
+
+func GenerateRandomString(n int) (string) {
+    const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+    bytes := GenerateRandomBytes(n)
+    
+    for i, b := range bytes {
+        bytes[i] = letters[b%byte(len(letters))]
+    }
+	
+    return (string(bytes))
+}
+
+func GenerateRandomBytes(n int) ([]byte) {
+    b := make([]byte, n)
+    _, err := rand.Read(b)
+
+    if err != nil {
+        return nil
+    }
+
+    return b
+}
 
 // Functions to Read
