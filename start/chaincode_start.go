@@ -28,9 +28,10 @@ const	LOGISTIC_PROVIDER   =  	"logistic_provider"
 const	INSURENCE_COMPANY = 	"insurence_company"
 
 // Status
-const CREATED = "created"
+const CREATED = "CRIADO"
 const CANCEL = "cancel"
 const SUCESS = "success"
+const DISPATCHED = "dispatched"
 
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
@@ -41,6 +42,7 @@ type Volume struct {
 	Owner									string `json: owner`
 	Shipper									string `json: owner`
 	Status									string `json: status`
+	LogisticProvider						string `json: logisticProvider`
 }
 
 func main() {
@@ -69,9 +71,9 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
         return t.Init(stub, "init", args)
 	} else if function == "CreateVolume" {
 		return t.CreateVolume(stub, args[0])
-	} /*else if function == "shipperToLogisticProvider" {
-        return t.shipperToLogisticProvider(stub, args)
-    } else if function == "LogisticProviderToCustomer" {
+	} else if function == "shipperToLogisticProvider" {
+        return t.ShipperToLogisticProvider(stub, args)
+    } /*else if function == "LogisticProviderToCustomer" {
 		return t.LogisticProviderToCustomer(stub, args)
 	} else if function == "LogisticProviderToLogisticProvider" {
 		return t.LogisticProviderToLogisticProvider(stub, args)
@@ -106,6 +108,7 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper
 	v.TrackId = GenerateRandomString(10)
 	v.Owner = "SHIPPER"
 	v.Shipper = shipper
+	v.Status = CREATED
 	
  	fmt.Println("[Volume]: " + v.TrackId)
 
@@ -114,6 +117,36 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper
 	err = stub.PutState(v.TrackId, bytes)
 
 	if err != nil { return nil, errors.New("Unable to put the state") }
+
+	return nil, nil
+}
+
+func (t *SimpleChaincode) ShipperToLogisticProvider(stub shim.ChaincodeStubInterface, args [] string) ([]byte, error) {
+	fmt.Println("shipper to logistic provider running");
+
+	var trackId = args[0];
+	var logisticProvider = args[1]
+	var v Volume
+
+	fmt.Println("shipper to logistic provider: get state");
+
+	bytes, err := stub.GetState(trackId)
+	if err != nil { return nil, errors.New("could not possible do getState ") }
+
+	err = json.Unmarshal(bytes, &v)
+	if err != nil { return nil, errors.New("could not possible do unmarshal ") }
+
+	fmt.Println("shipper to logistic provider: got state");
+
+	v.Status = DISPATCHED
+	v.LogisticProvider = logisticProvider
+
+	bytes, err = json.Marshal(v)
+	if err != nil { return nil, errors.New("could not possible do marshal ") }
+
+	err = stub.PutState(trackId, bytes)
+
+	if err != nil { return nil, errors.New("could not possible do putState ") }
 
 	return nil, nil
 }
