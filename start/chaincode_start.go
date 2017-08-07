@@ -13,7 +13,7 @@ import (
 	//"strconv"
 	//"strings"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	//"encoding/json"
+	"encoding/json"
 	//"regexp"
 	//"time"
 	"crypto/rand"
@@ -32,13 +32,18 @@ type SimpleChaincode struct {
 }
 
 type Volume struct {
+	TrackId									string `json: trackId`
+	Owner									string `json: owner`
+}
+
+/* type Volume struct {
 	NextStop								string `json: nextStop`
 	Origin									Origin
 	Destination								Destination
 	LogisticProvider						LogisticProvider
 	Volume									VolumeD
 	Event									Event
-}
+} */
 
 type Origin struct {
 	Name 									string `json: "name"`
@@ -150,20 +155,22 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 // Functions to Write
 func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface) ([]byte, error) {
 	var v Volume
+	var err error
+	var bytes []byte
 
-	//v.NextStop       	= nil
-	//v.Origin         	= nil
-	//v.Destination    	= nil
-	//v.LogisticProvifer	= nil
-	//v.Event         	= nil
-	v.Volume.TrackId	= GenerateRandomString(32);
+	v.TrackId	= GenerateRandomString(32);
 
- 	fmt.Println("[Volume]: " + v.Volume.TrackId)
+ 	fmt.Println("[Volume]: " + v.TrackId)
+
+	bytes, err = json.Marshal(v)
+
+	err = stub.PutState(v.TrackId, bytes)
+
+	if err != nil { return nil, errors.New("Unable to put the state") }
 
 	return nil, nil
-	//err = json.Unmarshal([]byte(volume_json), &v)
 
-	// if volume already exists
+	//err = json.Unmarshal([]byte(volume_json), &v)
 
 	/* record, err := stub.GetState(v.id)
 	if record != nil { return nil, errors.New("Volume already exists") } */
