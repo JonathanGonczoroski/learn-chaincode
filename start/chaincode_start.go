@@ -23,9 +23,14 @@ import (
 var logger = shim.NewLogger("CLDChaincode")
 
 // Participant
-const	SHIPPER      =  "shipper"
-const	LOGISTIC_PROVIDER   =  "logistic_provider"
-const	INSURENCE_COMPANY = "insurence_company"
+const	SHIPPER      =  		"shipper"
+const	LOGISTIC_PROVIDER   =  	"logistic_provider"
+const	INSURENCE_COMPANY = 	"insurence_company"
+
+// Status
+const CREATED = "created"
+const CANCEL = "cancel"
+const SUCESS = "success"
 
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
@@ -34,6 +39,8 @@ type SimpleChaincode struct {
 type Volume struct {
 	TrackId									string `json: trackId`
 	Owner									string `json: owner`
+	Shipper									string `json: owner`
+	Status									string `json: status`
 }
 
 /* type Volume struct {
@@ -123,7 +130,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
     if function == "init" {
         return t.Init(stub, "init", args)
 	} else if function == "CreateVolume" {
-		return t.CreateVolume(stub)
+		return t.CreateVolume(stub, args[0])
 	} /*else if function == "shipperToLogisticProvider" {
         return t.shipperToLogisticProvider(stub, args)
     } else if function == "LogisticProviderToCustomer" {
@@ -153,13 +160,16 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 // }
 
 // Functions to Write
-func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface) ([]byte, error) {
+func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface, shipper string) ([]byte, error) {
 	var v Volume
+
 	var err error
 	var bytes []byte
 
-	v.TrackId	= GenerateRandomString(32);
-
+	v.TrackId = GenerateRandomString(100)
+	v.Owner = "SHIPPER"
+	v.Shipper = shipper
+	
  	fmt.Println("[Volume]: " + v.TrackId)
 
 	bytes, err = json.Marshal(v)
@@ -198,7 +208,7 @@ func (t *SimpleChaincode) CreateVolume(stub shim.ChaincodeStubInterface) ([]byte
 } */
 
 func GenerateRandomString(n int) (string) {
-    const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+    const letters = "0123456789"
     bytes := GenerateRandomBytes(n)
     
     for i, b := range bytes {
