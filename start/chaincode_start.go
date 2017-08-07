@@ -253,6 +253,16 @@ func (t *SimpleChaincode) get_volumes(stub shim.ChaincodeStubInterface, args []s
 				result += string(queryValAsBytes) + ","
 				hasResult = true
 			}
+		} else if field == "shipper" {
+			if volume.Shipper == value && volume.Status == "CRIADO" {
+				result += string(queryValAsBytes) + ","
+				hasResult = true
+			}
+		} else if field == "logistic_provider" {
+			if volume.LogisticProvider == value {
+				result += string(queryValAsBytes) + ","
+				hasResult = true
+			}
 		} else {
 			result += string(queryValAsBytes) + ","
 			hasResult = true
