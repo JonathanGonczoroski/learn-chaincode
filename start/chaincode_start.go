@@ -89,6 +89,10 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	logger.Debug("query function: ", function)
 	fmt.Println(args)
 
+	if function == "get_volumes" {
+		return t.get_volumes(stub)
+	}
+
 	return nil, errors.New("Received unknown function invocation " + function)
 }
 
