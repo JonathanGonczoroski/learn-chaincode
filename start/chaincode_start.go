@@ -93,6 +93,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 
 	if function == "get_volumes" {
 		return t.get_volumes(stub, args)
+	} else if function == "get_tracker" {
+		return t.get_tracker(stub, args[0])
 	}
 
 	return nil, errors.New("Received unknown function invocation " + function)
@@ -278,4 +280,12 @@ func (t *SimpleChaincode) get_volume(stub shim.ChaincodeStubInterface, trackerId
 	}
 
 	return volume, nil
+}
+
+func (t *SimpleChaincode) get_tracker(stub shim.ChaincodeStubInterface, trackerId string) ([]byte, error) {
+	tracker, err := stub.GetState(trackerId)
+
+	if err != nil { return nil, errors.New("Couldn't retrieve tracker for ID " + trackerId) }
+
+	return tracker, nil
 }
